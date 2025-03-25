@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Property Detail</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Load static files -->
+    {% load static %}
+
+    <!-- Add CSRF Token to JavaScript -->
+    <script>
+        const csrfToken = '{{ csrf_token }}';  // CSRF token inserted dynamically by Django
+    </script>
+</head>
+
+<body>
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-md-8 offset-md-2">
+                <!-- Property Detail Card -->
+                <div class="card">
+                    <div class="card-body">
+                        <h1 class="card-title">{{ property.title }}</h1>
+                        <p class="card-text"><strong>Description:</strong> {{ property.description }}</p>
+                        <p class="card-text"><strong>Price:</strong> Rs {{ property.price }}</p>
+                        <p class="card-text"><strong>Address:</strong> {{ property.address }}</p>
+                        <p class="card-text"><strong>City:</strong> {{ property.city }}</p>
+                        <p class="card-text"><strong>State:</strong> {{ property.state }}</p>
+                        <p class="card-text"><strong>Zip Code:</strong> {{ property.zip_code }}</p>
+                        <p class="card-text"><strong>Property Type:</strong> {{ property.property_type }}</p>
+                        <p class="card-text"><strong>Status:</strong> {{ property.status }}</p>
+
+                        <!-- Property Image -->
+                        {% if property.image %}
+                        <div class="mb-3">
+                            <img src="{{ property.image.url }}" alt="{{ property.title }}" class="img-fluid" width="100%">
+                        </div>
+                        {% endif %}
+
+                        <!-- Action Buttons -->
+                        <div class="d-flex justify-content-between">
+                            <!-- Show Edit and Delete buttons only if the user is a superuser -->
+                            {% if user.is_superuser %}
+                            <a href="{% url 'property_edit' pk=property.id %}" class="btn btn-warning">Edit Property</a>
+                            <form action="{% url 'property_delete' pk=property.id %}" method="POST" class="d-inline">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger">Delete Property</button>
+                            </form>
+                            {% endif %}
+
+                            <a href="{% url 'property_list' %}" class="btn btn-secondary">Back to Listings</a>
+                        </div>
+
+                        <!-- Additional Action Buttons -->
+                        <div class="d-flex justify-content-between mt-3">
+                            <button class="btn btn-info" id="requestInfoBtn" data-property-id="{{ property.id }}">Request More Info</button>
+
+                            <!-- Conditional Buttons for Logged In Users -->
+                            {% if user.is_authenticated %}
+                                <button class="btn btn-outline-primary" id="addToFavoritesBtn" data-property-id="{{ property.id }}" {% if is_in_favorites %}disabled{% endif %}>
+                                    {% if is_in_favorites %}Already Added to Favorites{% else %}Add to Favorites{% endif %}
+                                </button>
+
+                                <button class="btn btn-outline-success" id="addToWishlistBtn" data-property-id="{{ property.id }}" {% if is_in_wishlist %}disabled{% endif %}>
+                                    {% if is_in_wishlist %}Already Added to Wishlist{% else %}Add to Wishlist{% endif %}
+                                </button>
+                            {% else %}
+                                <button class="btn btn-outline-primary" disabled>Add to Favorites</button>
+                                <button class="btn btn-outline-success" disabled>Add to Wishlist</button>
+                                <p class="mt-2">Please <a href="{% url 'login' %}">log in</a> to add to your favorites or wishlist.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Bootstrap JS files for interactivity -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+
+    <!-- External JS file to handle button interactions -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Request More Info Button
+            document.getElementById('requestInfoBtn').addEventListener('click', function () {
+                const propertyId = this.getAttribute('data-property-id');
+                alert('Requesting more information for Property ID: ' + propertyId);
+            });
+
+            // Handle Add to Favorites Button for authenticated users
+            document.getElementById('addToFavoritesBtn')?.addEventListener('click', function () {
+                const propertyId = this.getAttribute('data-property-id');
+
+                // Send AJAX request to add the property to favorites
+                fetch(`/add-to-favorites/${propertyId}/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrfToken
+                    },
+                    body: JSON.stringify({ property_id: propertyId })  // Send property ID
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Check for success response
+                    if (data.success) {
+                        alert(data.message);
+                        document.getElementById('addToFavoritesBtn').disabled = true;
+                        document.getElementById('addToFavoritesBtn').textContent = "Already Added to Favorites";  // Change button text
+                    } else {
+                        alert(data.message);  // Display server response error message
+                    }
+                })
+                .catch(error => {
+                    console.log('Error:', error);
+                    alert("Error occurred while adding to favorites.");
+                });
+            });
+
+            // Handle Add to Wishlist Button for authenticated users
+            document.getElementById('addToWishlistBtn')?.addEventListener('click', function () {
+                const propertyId = this.getAttribute('data-property-id');
+
+                // Send AJAX request to add the property to wishlist
+                fetch(`/add-to-wishlist/${propertyId}/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrfToken
+                    },
+                    body: JSON.stringify({ property_id: propertyId })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert(data.message);
+                        document.getElementById('addToWishlistBtn').disabled = true;
+                        document.getElementById('addToWishlistBtn').textContent = "Already Added to Wishlist";  // Change button text
+                    } else {
+                        alert(data.message);
+                    }
+                })
+                .catch(error => {
+                    console.log('Error:', error);
+                    alert("Error occurred while adding to wishlist.");
+                });
+            });
+        });
+    </script>
+
+</body>
+
+</html>

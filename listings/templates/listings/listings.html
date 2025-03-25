@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <!-- Property Listings -->
+    {% for property in properties %}
+        <div class="property-item">
+            <h3>{{ property.title }}</h3>
+            <p>{{ property.description }}</p>
+            <p><strong>Price:</strong> ${{ property.price }}</p>
+
+            {% if property.image %}
+                <div class="image_box">
+                    <img src="{{ property.image.url }}" alt="{{ property.title }}">
+                </div>
+            {% endif %}
+
+            <a href="{% url 'property_detail' property.pk %}">View Details</a>
+
+            <!-- Debugging: Show the property ID -->
+            <p>Property ID: {{ property.id }}</p>
+
+            <!-- Add to Favorites Button -->
+            {% if user.is_authenticated %}
+                <button class="btn btn-outline-primary" id="addToFavoritesBtn{{ property.pk }}" data-property-id="{{ property.pk }}" {% if property in user.favorite_properties.all %}disabled{% endif %}>
+                    {% if property in user.favorite_properties.all %}
+                        Already Added to Favorites
+                    {% else %}
+                        Add to Favorites
+                    {% endif %}
+                </button>
+            {% else %}
+                <!-- Disabled button and message for non-authenticated users -->
+                <button class="btn btn-outline-primary" disabled>Add to Favorites</button>
+                <p>Please <a href="{% url 'login' %}">log in</a> to add to your favorites.</p>
+            {% endif %}
+
+            <!-- Show Edit and Delete links only if the user is the owner or an admin -->
+            {% if property.user == request.user or request.user.is_superuser %}
+                <a href="{% url 'property_edit' pk=property.id %}">Edit Property</a>
+                <a href="{% url 'property_delete' pk=property.id %}">Delete Property</a>
+            {% endif %}
+        </div>
+    {% endfor %}
+{% endblock %}

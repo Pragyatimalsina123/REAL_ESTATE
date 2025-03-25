@@ -1,0 +1,29 @@
+{{% extends "base.html" %}
+
+{% block content %}
+    <!-- Your property listings content goes here -->
+    {% for property in properties %}
+        <div class="property-item">
+            <h3>{{ property.title }}</h3>
+
+            <p>{{ property.description }}</p>
+            <p><strong>Price:</strong> ${{ property.price }}</p>
+
+            {% if property.image %}
+                <img src="{{ property.image.url }}" alt="{{ property.title }}">
+            {% endif %}
+
+            <!-- Link to view the property detail page -->
+            <a href="{% url 'property_detail' property.pk %}">View Details</a>
+
+            <!-- Debugging: Show the property ID (optional) -->
+            <p>Property ID: {{ property.id }}</p>
+
+            <!-- Show Edit and Delete links only if the user is the owner or an admin -->
+            {% if property.user == request.user or request.user.is_superuser %}
+                <a href="{% url 'property_edit' pk=property.id %}">Edit Property</a>
+                <a href="{% url 'property_delete' pk=property.id %}">Delete Property</a>
+            {% endif %}
+        </div>
+    {% endfor %}
+{% endblock %}

@@ -1,0 +1,171 @@
+/* Existing Property List Styles */
+.property-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+    padding: 20px;
+}
+
+.property-item {
+    border: 1px solid #ccc;
+    padding: 15px;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    transition: box-shadow 0.3s ease; /* Added subtle transition effect */
+}
+
+.property-item:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Add shadow on hover */
+}
+.image_box{
+    height: 200px;
+    width : 200px;
+    }
+.image_box img {
+    width: 100%;
+    height: 100%;
+    border-radius: 5px;
+    object-fit: cover; /* Ensures the image covers the space without stretching */
+    max-height: 200px; /* Optional: Keeps image height consistent */
+}
+
+.property-item a {
+    display: block;
+    margin-top: 10px;
+    font-weight: bold;
+    color: #007bff;
+    text-decoration: none;
+    transition: color 0.3s ease; /* Smooth color transition on hover */
+}
+
+.property-item a:hover {
+    text-decoration: underline;
+    color: #0056b3; /* Slightly darker color on hover */
+}
+
+/* Add to Favorites Button Styling */
+.property-item .btn-add-favorite {
+    background-color: #ff4d4d; /* Red for attention */
+    color: white;
+    border: none;
+    padding: 5px 15px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-weight: bold;
+    transition: background-color 0.3s ease, transform 0.3s ease; /* Added transition for smooth effect */
+    width: 100%;
+    margin-top: 10px;
+}
+
+.property-item .btn-add-favorite:hover {
+    background-color: #cc0000; /* Darker red on hover */
+    transform: scale(1.05); /* Slight scaling effect on hover */
+}
+
+.property-item .btn-add-favorite:disabled {
+    background-color: #ccc;
+    color: #666;
+    cursor: not-allowed;
+}
+
+/* Message for Non-Logged-In Users */
+.property-item .login-message {
+    display: none; /* Hidden by default */
+    color: #ff4d4d; /* Red color for attention */
+    font-size: 1rem;
+    margin-top: 10px;
+}
+
+.property-item .login-message.show {
+    display: block;
+    font-weight: bold;
+    text-align: center;
+}
+
+/* New Styles for Property Detail Page */
+.property-detail {
+    margin: 20px 0;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Title styling */
+.property-detail h1 {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #333;
+}
+
+/* Property Info */
+.property-detail .property-info {
+    margin-bottom: 20px;
+}
+
+.property-detail .property-info p {
+    font-size: 1rem;
+    margin: 8px 0;
+    color: #555;
+}
+
+/* Buttons for Favorites, Wishlist, etc. */
+.property-detail .btn {
+    border-radius: 5px;
+    padding: 10px 20px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.property-detail .btn-outline-primary {
+    background-color: #007bff;
+    color: white;
+    border: none;
+}
+
+.property-detail .btn-outline-primary:hover {
+    background-color: #0056b3;
+}
+
+.property-detail .btn-outline-success {
+    background-color: #28a745;
+    color: white;
+    border: none;
+}
+
+.property-detail .btn-outline-success:hover {
+    background-color: #218838;
+}
+
+.property-detail .btn-info {
+    background-color: #17a2b8;
+    color: white;
+    border: none;
+}
+
+.property-detail .btn-info:hover {
+    background-color: #138496;
+}
+
+/* Disabled buttons for non-logged in users */
+.property-detail .btn:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+/* Styling the image on the property detail page */
+.property-detail img {
+    width: 100%;
+    border-radius: 8px;
+    object-fit: cover;
+    max-height: 400px; /* Ensure images on property detail don't stretch too large */
+    margin-bottom: 20px;
+}
+
+/* Message for non-logged in users */
+.property-detail .login-message {
+    margin-top: 20px;
+    color: #555;
+    font-size: 1rem;
+}
