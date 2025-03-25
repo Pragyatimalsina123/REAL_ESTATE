@@ -60,11 +60,11 @@
 
                             <!-- Conditional Buttons for Logged In Users -->
                             {% if user.is_authenticated %}
-                                <button class="btn btn-outline-primary" id="addToFavoritesBtn" data-property-id="{{ property.id }}" {% if is_in_favorites %}disabled{% endif %}>
+                                <button class="btn btn-outline-primary" id="addToFavoritesBtn_{{ property.id }}" data-property-id="{{ property.id }}" {% if is_in_favorites %}disabled{% endif %}>
                                     {% if is_in_favorites %}Already Added to Favorites{% else %}Add to Favorites{% endif %}
                                 </button>
 
-                                <button class="btn btn-outline-success" id="addToWishlistBtn" data-property-id="{{ property.id }}" {% if is_in_wishlist %}disabled{% endif %}>
+                                <button class="btn btn-outline-success" id="addToWishlistBtn_{{ property.id }}" data-property-id="{{ property.id }}" {% if is_in_wishlist %}disabled{% endif %}>
                                     {% if is_in_wishlist %}Already Added to Wishlist{% else %}Add to Wishlist{% endif %}
                                 </button>
                             {% else %}
@@ -86,74 +86,74 @@
     <!-- External JS file to handle button interactions -->
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            // Request More Info Button
-            document.getElementById('requestInfoBtn').addEventListener('click', function () {
-                const propertyId = this.getAttribute('data-property-id');
-                alert('Requesting more information for Property ID: ' + propertyId);
-            });
+    const csrfToken = '{{ csrf_token }}';  // CSRF token inserted dynamically by Django
 
-            // Handle Add to Favorites Button for authenticated users
-            document.getElementById('addToFavoritesBtn')?.addEventListener('click', function () {
-                const propertyId = this.getAttribute('data-property-id');
+    // Handle Add to Favorites Button for authenticated users
+    const addToFavoritesBtn = document.getElementById('addToFavoritesBtn');
+    if (addToFavoritesBtn) {
+        addToFavoritesBtn.addEventListener('click', function () {
+            const propertyId = this.getAttribute('data-property-id');
 
-                // Send AJAX request to add the property to favorites
-                fetch(`/add-to-favorites/${propertyId}/`, {
-                    method: 'POST',
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest',
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': csrfToken
-                    },
-                    body: JSON.stringify({ property_id: propertyId })  // Send property ID
-                })
-                .then(response => response.json())
-                .then(data => {
-                    // Check for success response
-                    if (data.success) {
-                        alert(data.message);
-                        document.getElementById('addToFavoritesBtn').disabled = true;
-                        document.getElementById('addToFavoritesBtn').textContent = "Already Added to Favorites";  // Change button text
-                    } else {
-                        alert(data.message);  // Display server response error message
-                    }
-                })
-                .catch(error => {
-                    console.log('Error:', error);
-                    alert("Error occurred while adding to favorites.");
-                });
-            });
-
-            // Handle Add to Wishlist Button for authenticated users
-            document.getElementById('addToWishlistBtn')?.addEventListener('click', function () {
-                const propertyId = this.getAttribute('data-property-id');
-
-                // Send AJAX request to add the property to wishlist
-                fetch(`/add-to-wishlist/${propertyId}/`, {
-                    method: 'POST',
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest',
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': csrfToken
-                    },
-                    body: JSON.stringify({ property_id: propertyId })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        alert(data.message);
-                        document.getElementById('addToWishlistBtn').disabled = true;
-                        document.getElementById('addToWishlistBtn').textContent = "Already Added to Wishlist";  // Change button text
-                    } else {
-                        alert(data.message);
-                    }
-                })
-                .catch(error => {
-                    console.log('Error:', error);
-                    alert("Error occurred while adding to wishlist.");
-                });
+            // Send AJAX request to add the property to favorites
+            fetch(`/add-to-favorites/${propertyId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken
+                },
+                body: JSON.stringify({ property_id: propertyId })  // Send the property ID
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(data.message);
+                    this.disabled = true;
+                    this.textContent = "Already Added to Favorites";  // Change button text
+                } else {
+                    alert(data.message);  // Show error message returned from the view
+                }
+            })
+            .catch(error => {
+                console.log('Error:', error);
+                alert("Error occurred while adding to favorites.");
             });
         });
-    </script>
+    }
+
+    // Handle Add to Wishlist Button for authenticated users
+    const addToWishlistBtn = document.getElementById('addToWishlistBtn');
+    if (addToWishlistBtn) {
+        addToWishlistBtn.addEventListener('click', function () {
+            const propertyId = this.getAttribute('data-property-id');
+
+            // Send AJAX request to add the property to wishlist
+            fetch(`/add-to-wishlist/${propertyId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken
+                },
+                body: JSON.stringify({ property_id: propertyId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(data.message);
+                    this.disabled = true;
+                    this.textContent = "Already Added to Wishlist";  // Change button text
+                } else {
+                    alert(data.message);  // Show error message
+                }
+            })
+            .catch(error => {
+                console.log('Error:', error);
+                alert("Error occurred while adding to wishlist.");
+            });
+        });
+    }
+});
 
 </body>
 

@@ -26,32 +26,31 @@ def wishlist_view(request):
     # Handle logic for displaying wishlist
     return render(request, 'listings/wishlist.html')
 
+# Add to favorites view
 @login_required
-def add_to_favorites(request):
-    if request.method == 'POST':
-        # Get property ID from the POST request
-        property_id = request.POST.get('propertyId')
+def add_to_favorites(request, property_id):
+    property = get_object_or_404(Property, id=property_id)
 
-        try:
-            property = Property.objects.get(id=property_id)
+    if Favorite.objects.filter(user=request.user, property=property).exists():
+        messages.info(request, 'This property is already in your favorites.')
+        return JsonResponse({'success': False, 'message': 'Already added to favorites'})
 
-            # Check if the property is already in the user's favorites
-            if Favorite.objects.filter(user=request.user, property=property).exists():
-                messages.info(request, 'This property is already in your favorites.')
-                return JsonResponse({'success': False, 'message': 'Already added to favorites'})
+    Favorite.objects.create(user=request.user, property=property)
+    messages.success(request, 'Property added to favorites')
+    return JsonResponse({'success': True, 'message': 'Property added to favorites'})
 
-            # Add to favorites
-            Favorite.objects.create(user=request.user, property=property)
-            messages.success(request, 'Property added to favorites!')
-            return JsonResponse({'success': True, 'message': 'Property added to favorites!'})
+# Add to wishlist view
+@login_required
+def add_to_wishlist(request, property_id):
+    property = get_object_or_404(Property, id=property_id)
 
-        except Property.DoesNotExist:
-            messages.error(request, 'Property not found.')
-            return JsonResponse({'success': False, 'message': 'Property not found'})
+    if Wishlist.objects.filter(user=request.user, property=property).exists():
+        messages.info(request, 'This property is already in your wishlist.')
+        return JsonResponse({'success': False, 'message': 'Already added to wishlist'})
 
-    messages.error(request, 'Invalid request method.')
-    return JsonResponse({'success': False, 'message': 'Invalid request method'})
-
+    Wishlist.objects.create(user=request.user, property=property)
+    messages.success(request, 'Property added to wishlist')
+    return JsonResponse({'success': True, 'message': 'Property added to wishlist'})
 
        
 # Add a new property (only accessible by authenticated users)
@@ -152,17 +151,7 @@ def register(request):
     
     return render(request, 'listings/register.html', {'form': form})
 
-@login_required
-def add_to_wishlist(request, property_id):
-    property = get_object_or_404(Property, id=property_id)
 
-    if Wishlist.objects.filter(user=request.user, property=property).exists():
-        messages.info(request, 'This property is already in your wishlist.')
-        return JsonResponse({'success': False, 'message': 'Already added to wishlist'})
-
-    Wishlist.objects.create(user=request.user, property=property)
-    messages.success(request, 'Property added to wishlist')
-    return JsonResponse({'success': True, 'message': 'Property added to wishlist'})
 
 @login_required
 def wishlist(request):

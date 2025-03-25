@@ -11,6 +11,7 @@ urlpatterns = [
     path('search/', views.search_view, name='search'),
     path('wishlist/', views.wishlist_view, name='wishlist'), 
     path('add-to-favorites/<int:property_id>/', views.add_to_favorites, name='add_to_favorites'),
+    path('add-to-wishlist/<int:property_id>/', views.add_to_wishlist, name='add_to_wishlist'),
     path('listings/<int:pk>/', views.property_detail, name='property_detail'),
     path('<int:pk>/edit/', views.property_edit, name='property_edit'),
     path('<int:pk>/delete/', views.property_delete, name='property_delete'),
